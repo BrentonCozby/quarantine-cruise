@@ -23,6 +23,7 @@ function App() {
 
           <Switch>
             <Route path="/" exact component={HomeScreen}/>
+            <Route path="/index.html" exact component={HomeScreen}/>
             <Route path="/contribute" component={ContributeScreen}/>
             <Route component={NotFoundScreen}/>
           </Switch>
