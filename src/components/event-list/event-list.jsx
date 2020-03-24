@@ -1,16 +1,10 @@
 import React, {useState, useEffect} from 'react'
-import {Card, Button, List, Empty, Layout, Row, Col, Select, DatePicker} from 'antd'
+import {Card, Button, List, Skeleton, Layout, Row, Col, Select, Input, DatePicker, Badge} from 'antd'
 import {Link} from 'react-router-dom'
 import {format, add, isAfter, isToday, isValid, isSameDay} from 'date-fns'
 import {LinkOutlined, CalendarTwoTone} from '@ant-design/icons'
 import Media from 'react-media'
 import './event-list.less'
-
-import educationData from 'data/educationData.json'
-import artAndMusicData from 'data/artAndMusicData.json'
-import fitnessAndWellnessData from 'data/fitnessAndWellnessData.json'
-import otherData from 'data/otherData.json'
-import anytimeData from 'data/anytimeData.json'
 
 const scheduledCategoryOptions = [
   {id: 'all', label: 'All'},
@@ -20,22 +14,53 @@ const scheduledCategoryOptions = [
   {id: 'other', label: 'Other'}
 ]
 
-const allEventsWithDates = [].concat(educationData, artAndMusicData, fitnessAndWellnessData, otherData)
-.filter(({datetime}) => isToday(new Date(datetime)) || isAfter(new Date(datetime), new Date()))
-.sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
+const skeletonData = ['row 1', 'row 2', 'row 3']
 
 function EventListComponent({
   loadMoreSize = 8
 }) {
-  const [allScheduledData, setAllScheduledData] = useState(allEventsWithDates)
-  const [allAnytimeData, setAllAnytimeData] = useState(anytimeData)
-  const [fullEventList, setFullEventList] = useState([].concat(allScheduledData.slice(0, loadMoreSize)))
-  const [visibleEventList, setVisibleEventList] = useState([].concat(allScheduledData.slice(0, loadMoreSize)))
+  const [educationData, setEducationData] = useState([])
+  const [artAndMusicData, setArtAndMusicData] = useState([])
+  const [fitnessAndWellnessData, setFitnessAndWellnessData] = useState([])
+  const [otherData, setOtherData] = useState([])
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [allScheduledData, setAllScheduledData] = useState([])
+  const [allAnytimeData, setAllAnytimeData] = useState([])
+  const [fullEventList, setFullEventList] = useState([])
+  const [visibleEventList, setVisibleEventList] = useState([])
   const [categoryOptions, setCategoryOptions] = useState(scheduledCategoryOptions)
   const [hasMoreResults, setHasMoreResults] = useState(true)
+  const [searchTerm, setSearchTerm] = useState()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [eventType, setEventType] = useState('scheduled')
   const [selectedDate, setSelectedDate] = useState(null)
+
+  useEffect(() => { // setAllScheduledData
+    setIsLoading(true)
+
+    Promise.all([
+      fetch('/data/educationData.json').then(res => res.json()).then(data => setEducationData(data)),
+      fetch('/data/artAndMusicData.json').then(res => res.json()).then(data => setArtAndMusicData(data)),
+      fetch('/data/fitnessAndWellnessData.json').then(res => res.json()).then(data => setFitnessAndWellnessData(data)),
+      fetch('/data/otherData.json').then(res => res.json()).then(data => setOtherData(data)),
+      fetch('/data/anytimeData.json').then(res => res.json()).then(data => setAllAnytimeData(data))
+    ]).then(() => {
+      setIsLoading(false)
+    })
+  }, [])
+
+  useEffect(() => {
+    if ([educationData, artAndMusicData, fitnessAndWellnessData, otherData].some(d => !d)) {
+      return
+    }
+
+    const allEventsWithDates = [].concat(educationData, artAndMusicData, fitnessAndWellnessData, otherData)
+    .filter(({datetime}) => isToday(new Date(datetime)) || isAfter(new Date(datetime), new Date()))
+    .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
+
+    setAllScheduledData(allEventsWithDates)
+  }, [educationData, artAndMusicData, fitnessAndWellnessData, otherData])
 
   useEffect(() => { // setFullEventList and setVisibleEventList
     let newEventList = []
@@ -56,13 +81,17 @@ function EventListComponent({
       }
     }
 
+    if (searchTerm) {
+      newEventList = newEventList.filter(event => JSON.stringify(event).toLowerCase().includes(searchTerm.toLowerCase()))
+    }
+
     if (selectedDate !== null && isValid(new Date(selectedDate))) {
       newEventList = newEventList.filter(({datetime}) => isSameDay(new Date(datetime), new Date(selectedDate)))
     }
 
     setFullEventList(newEventList)
     setVisibleEventList(newEventList.slice(0, loadMoreSize))
-  }, [selectedCategory, eventType, selectedDate, allScheduledData, allAnytimeData, loadMoreSize])
+  }, [searchTerm, selectedCategory, eventType, selectedDate, allScheduledData, allAnytimeData, loadMoreSize])
 
   useEffect(() => { // setSelectedCategory
     setSelectedCategory('all')
@@ -92,8 +121,8 @@ function EventListComponent({
     setSelectedDate('')
   }, [eventType])
 
-  const onLoadMore = () => {
-    setVisibleEventList(visibleEventList.concat(fullEventList.slice(visibleEventList.length, visibleEventList.length + loadMoreSize)))
+  const onSearch = value => {
+    setSearchTerm(value)
   }
 
   const onCategoryChange = newValue => {
@@ -108,15 +137,29 @@ function EventListComponent({
     setSelectedDate(newValue)
   }
 
+  const onLoadMore = () => {
+    setVisibleEventList(visibleEventList.concat(fullEventList.slice(visibleEventList.length, visibleEventList.length + loadMoreSize)))
+  }
+
   return (
     <div className="event-list-component">
       <div className="nav">
 
         <div className="list-controls">
+          <div className="control">
+            <Input.Search
+              placeholder="Search"
+              onSearch={onSearch}
+              loading={isLoading}
+              disabled={isLoading}
+              style={{minWidth: '160px'}}
+            />
+          </div>
           <Select
             defaultValue="all"
             value={selectedCategory}
             onChange={onCategoryChange}
+            disabled={isLoading}
             style={{minWidth: '140px'}}
             className="control"
           >
@@ -127,6 +170,7 @@ function EventListComponent({
           <Select
             defaultValue="scheduled"
             onChange={onEventTypeChange}
+            disabled={isLoading}
             style={{minWidth: '100px'}}
             className="control"
           >
@@ -139,6 +183,7 @@ function EventListComponent({
               onChange={onDateSelect}
               format="M/D"
               placeholder="Date"
+              disabled={isLoading}
               style={{maxWidth: '90px'}}
               className="control"
             />
@@ -151,30 +196,26 @@ function EventListComponent({
 
       </div>
 
-      {visibleEventList.length ?
-        <React.Fragment>
-          <Media queries={{small: '(max-width: 991px)', large: '(min-width: 992px)'}}>
-            {matches => (
-              <React.Fragment>
-                {matches.small && <CardListComponent eventList={visibleEventList}/>}
-                {matches.large && <ListComponent eventList={visibleEventList}/>}
-              </React.Fragment>
-            )}
-          </Media>
-          {hasMoreResults &&
-            <div style={{textAlign: 'center', marginTop: '8px'}}>
-              <Button onClick={onLoadMore}>Load More</Button>
-            </div>
-          }
-        </React.Fragment>
-        :
-        <Empty description="No events or activities available"/>
-      }
+      <React.Fragment>
+        <Media queries={{small: '(max-width: 991px)', large: '(min-width: 992px)'}}>
+          {matches => (
+            <React.Fragment>
+              {matches.small && <CardListComponent isLoading={isLoading} eventList={isLoading ? skeletonData : visibleEventList}/>}
+              {matches.large && <ListComponent isLoading={isLoading} eventList={isLoading ? skeletonData : visibleEventList}/>}
+            </React.Fragment>
+          )}
+        </Media>
+        {hasMoreResults &&
+          <div style={{textAlign: 'center', marginTop: '8px'}}>
+            <Button onClick={onLoadMore} disabled={isLoading}>Load More</Button>
+          </div>
+        }
+      </React.Fragment>
     </div>
   )
 }
 
-function ListComponent({eventList}) {
+function ListComponent({isLoading, eventList}) {
   return (
     <List
       className="list-component"
@@ -182,7 +223,8 @@ function ListComponent({eventList}) {
       itemLayout="horizontal"
       renderItem={({id, datetime, activity, host, details, kidFriendly, link}) =>
         <List.Item
-          extra={(
+          key={id}
+          extra={(!isLoading &&
             <div className="extra">
               {datetime && <div className="when">{format(new Date(datetime), 'eee, MMM d, h:mm aaaa')}</div>}
               <Button type="link" href={link} target="_blank" rel="noopener noreferrer">Website</Button>
@@ -200,35 +242,39 @@ function ListComponent({eventList}) {
             </div>
           )}
         >
-          <List.Item.Meta
-            title={(
-              <div className="title">
-                <Button type="link" href={link} target="_blank" rel="noopener noreferrer">{activity}
-                &nbsp;
-                </Button> <span className="host">by {host}</span>
-                <div className="badges"></div>
-              </div>
-            )}
-            description={(
-              <div className="description">
-                <p className="details">{details}</p>
-              </div>
-            )}
-          />
+          <Skeleton loading={isLoading} active title>
+            <List.Item.Meta
+              title={(
+                <div className="title">
+                  <Button type="link" href={link} target="_blank" rel="noopener noreferrer">{activity}
+                  &nbsp;
+                  </Button> <span className="host">by {host}</span>
+                  <div className="badges">
+                    {kidFriendly && <Badge text="Kid Friendly" color="green"/>}
+                  </div>
+                </div>
+              )}
+              description={(
+                <div className="description">
+                  <p className="details">{details}</p>
+                </div>
+              )}
+            />
+          </Skeleton>
         </List.Item>
       }
     />
   )
 }
 
-function CardListComponent({eventList}) {
+function CardListComponent({isLoading, eventList}) {
   return (
     <div className="card-list-component">
       <Layout>
         <Row gutter={[12, 12]}>
           {eventList.map(event =>
             <Col key={event.id} xs={24} sm={24} md={12}>
-              <CardComponent event={event}/>
+              <CardComponent event={event} isLoading={isLoading}/>
             </Col>
           )}
         </Row>
@@ -237,15 +283,22 @@ function CardListComponent({eventList}) {
   )
 }
 
-function CardComponent({event}) {
-  const {id, activity, host, datetime, category, details, kidFriendly, link} = event
+function CardComponent({isLoading, event}) {
+  const {activity, host, datetime, details, kidFriendly, link} = event
 
   const Title = () => (
     <a href={link} target="_blank" rel="noopener noreferrer">{activity} <span><LinkOutlined/></span></a>
   )
 
+  if (isLoading) {
+    return <div style={{paddingTop: '4px'}}><Skeleton loading={isLoading} active title/></div>
+  }
+
   return (
     <Card className="card-component" title={<Title/>} size="small">
+      <div className="badges">
+        {kidFriendly && <Badge text="Kid Friendly" color="green"/>}
+      </div>
       <p className="host">Hosted by <strong>{host}</strong></p>
       <p className="details">{details}</p>
       <div className="extra">

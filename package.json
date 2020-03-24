@@ -22,7 +22,7 @@
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
-    "parseEventData": "node src/scripts/getEventData.js"
+    "parseEventData": "node scripts/parseEventData.js"
   },
   "eslintConfig": {
     "extends": "react-app"

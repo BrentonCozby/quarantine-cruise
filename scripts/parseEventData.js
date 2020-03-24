@@ -4,7 +4,7 @@ const {resolve} = require('path')
 const crypto = require('crypto')
 const {set, getYear, getDate, getMonth} = require('date-fns')
 
-const totalData = excelToJson({sourceFile: 'src/data/COVID 19 Activities & Live Events.xlsx'})
+const totalData = excelToJson({sourceFile: 'public/data/COVID 19 Activities & Live Events.xlsx'})
 
 const fieldNameMapWithDates = {
   A: 'time',
@@ -95,7 +95,7 @@ function parseSheet({sheet, fieldNameMap, category, hasDateRows}) {
 }
 
 function createJsonFile({filename, jsonData}) {
-  fs.writeFile(resolve(__dirname, '..', 'data', filename), JSON.stringify(jsonData), (writeFileError) => {
+  fs.writeFile(resolve(__dirname, '..', 'public', 'data', filename), JSON.stringify(jsonData), (writeFileError) => {
     if (writeFileError) {
       throw Error(writeFileError)
     }

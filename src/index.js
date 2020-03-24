@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import 'whatwg-fetch'
 import * as serviceWorker from './serviceWorker'
 import {ConfigProvider} from 'antd'
 
