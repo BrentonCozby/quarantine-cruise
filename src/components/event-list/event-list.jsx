@@ -238,10 +238,6 @@ function CardListComponent({eventList}) {
 function CardComponent({event}) {
   const {id, activity, host, datetime, category, details, link} = event
 
-  const dayOfWeek = isToday(new Date(datetime)) ? 'Today' : format(new Date(datetime), 'eeee')
-  const date = format(new Date(datetime), 'MMMM d')
-  const time = format(add(new Date(datetime), {hours: 1}), 'p')
-
   const Title = () => (
     <a href={link} target="_blank" rel="noopener noreferrer">{activity} <span><LinkOutlined/></span></a>
   )
@@ -250,7 +246,7 @@ function CardComponent({event}) {
     <Card className="card-component" title={<Title/>} size="small">
       <p className="host">Hosted by <strong>{host}</strong></p>
       <p className="details">{details}</p>
-      <p className="when">{dayOfWeek}, {date} at {time}</p>
+      {datetime && <p className="when">format(new Date(datetime), 'MMM d, h:mm aaaa')</p>}
     </Card>
   )
 }
