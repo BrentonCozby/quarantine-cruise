@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
+import {Layout} from 'antd'
+import {setTwoToneColor} from '@ant-design/icons'
+import 'css/App.less'
+
+import NavComponent from 'components/nav'
+import FooterComponent from 'components/footer'
+
+import HomeScreen from 'screens/home'
+import ContributeScreen from 'screens/contribute'
+import NotFoundScreen from 'screens/not-found'
+
+setTwoToneColor('#13c2c2')
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout className="App">
+      <BrowserRouter>
+        <div className="layout-without-footer">
+
+          <NavComponent/>
+
+          <Switch>
+            <Route path="/" exact component={HomeScreen}/>
+            <Route path="/contribute" component={ContributeScreen}/>
+            <Route component={NotFoundScreen}/>
+          </Switch>
+
+        </div>
+        <FooterComponent/>
+      </BrowserRouter>
+    </Layout>
   );
 }
 
-export default App;
+export default App

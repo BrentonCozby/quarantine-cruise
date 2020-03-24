@@ -1,0 +1,113 @@
+.event-list-component .nav {
+  max-width: 1000px;
+  margin: 0 auto;
+
+  @media (min-width: 576px) {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    .list-controls {
+      display: flex;
+    }
+  }
+
+  .control {
+    margin-bottom: 12px;
+
+    @media (min-width: 576px) {
+      margin-right: 12px;
+    }
+  }
+
+  .ant-btn {
+    width: 100%;
+
+    @media (min-width: 576px) {
+      width: unset;
+    }
+  }
+}
+
+.event-list-component .list-component {
+  background-color: #fff;
+  padding: 0 12px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.event-list-component .list-component .ant-list-item {
+  align-items: flex-start;
+}
+
+.event-list-component .list-component .title {
+  margin-bottom: 12px;
+}
+
+.event-list-component .list-component .title .ant-btn-link {
+  padding: 0;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 20px;
+  color: rgba(0, 0, 0, .65);
+  height: unset;
+
+  &:hover {
+    color: @primary-color;
+  }
+}
+
+.event-list-component .list-component .host {
+  color: #aaa;
+  line-height: 20px;
+}
+
+.event-list-component .list-component .details {
+  margin-bottom: 0;
+}
+
+.event-list-component .list-component .extra {
+  padding-left: 20px;
+  text-align: right;
+}
+
+.event-list-component .list-component .extra .ant-btn-link {
+  padding: 0;
+  line-height: normal;
+  height: unset;
+  margin-top: 8px;
+}
+
+.event-list-component .card-list-component {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 12px;
+
+  @media (min-width: 576px) {
+    margin-top: 0;
+  }
+}
+
+.event-list-component .card-component .ant-card-head-title {
+  white-space: normal;
+
+  a {
+    color: @secondary-color;
+
+    &:hover {
+      color: @primary-color;
+    }
+  }
+
+  .anticon-link {
+    position: relative;
+    top: -3px;
+    margin-left: 3px;
+  }
+}
+
+.event-list-component .card-component .when {
+  margin-bottom: 0;
+  color: #aaa;
+  text-align: right;
+}
