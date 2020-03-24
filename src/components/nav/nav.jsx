@@ -18,7 +18,9 @@ function Nav() {
   const location = useLocation()
   const pathSnippets = location.pathname.split('/').filter(i => i)
 
-  if (location.pathname === '/') {
+  console.log(location.pathname);
+
+  if (location.pathname === '/' || location.pathname === '/index.html') {
     return null
   }
 
