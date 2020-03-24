@@ -35,7 +35,7 @@ function EventListComponent({
   const [hasMoreResults, setHasMoreResults] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [eventType, setEventType] = useState('scheduled')
-  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedDate, setSelectedDate] = useState(null)
 
   useEffect(() => { // setFullEventList and setVisibleEventList
     let newEventList = []
@@ -56,7 +56,7 @@ function EventListComponent({
       }
     }
 
-    if (isValid(new Date(selectedDate))) {
+    if (selectedDate !== null && isValid(new Date(selectedDate))) {
       newEventList = newEventList.filter(({datetime}) => isSameDay(new Date(datetime), new Date(selectedDate)))
     }
 
@@ -86,11 +86,11 @@ function EventListComponent({
 
   useEffect(() => { // setHasMoreResults
     setHasMoreResults(visibleEventList.length < fullEventList.length)
-  }, [visibleEventList, fullEventList, eventType, selectedCategory, selectedDate, allScheduledData, allAnytimeData])
+  }, [visibleEventList, fullEventList])
 
   useEffect(() => {
     setSelectedDate('')
-  }, [eventType, selectedCategory])
+  }, [eventType])
 
   const onLoadMore = () => {
     setVisibleEventList(visibleEventList.concat(fullEventList.slice(visibleEventList.length, visibleEventList.length + loadMoreSize)))
