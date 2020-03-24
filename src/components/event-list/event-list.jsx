@@ -184,17 +184,19 @@ function ListComponent({eventList}) {
         <List.Item
           extra={(
             <div className="extra">
-              {datetime && <div className="when">{format(new Date(datetime), 'MMM d, h:mm aaaa')}</div>}
+              {datetime && <div className="when">{format(new Date(datetime), 'eee, MMM d, h:mm aaaa')}</div>}
               <Button type="link" href={link} target="_blank" rel="noopener noreferrer">Website</Button>
-              {datetime && <Button
-                type="link"
-                style={{marginLeft: '20px'}}
-                href={createCalendarLink({activity, datetime, host, details, kidFriendly, link})}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Add to <CalendarTwoTone />
-              </Button>}
+              {datetime &&
+                <Button
+                  type="link"
+                  style={{marginLeft: '20px'}}
+                  href={createCalendarLink({activity, datetime, host, details, kidFriendly, link})}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Add to <CalendarTwoTone />
+                </Button>
+              }
             </div>
           )}
         >
@@ -236,7 +238,7 @@ function CardListComponent({eventList}) {
 }
 
 function CardComponent({event}) {
-  const {id, activity, host, datetime, category, details, link} = event
+  const {id, activity, host, datetime, category, details, kidFriendly, link} = event
 
   const Title = () => (
     <a href={link} target="_blank" rel="noopener noreferrer">{activity} <span><LinkOutlined/></span></a>
@@ -246,14 +248,26 @@ function CardComponent({event}) {
     <Card className="card-component" title={<Title/>} size="small">
       <p className="host">Hosted by <strong>{host}</strong></p>
       <p className="details">{details}</p>
-      {datetime && <p className="when">format(new Date(datetime), 'MMM d, h:mm aaaa')</p>}
+      <div className="extra">
+        {datetime &&
+          <a
+            className="add-to-cal-link"
+            href={createCalendarLink({activity, datetime, host, details, kidFriendly, link})}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Add to <CalendarTwoTone />
+          </a>
+        }
+        {datetime && <p className="when">{format(new Date(datetime), 'eee, MMM d, h:mm aaaa')}</p>}
+      </div>
     </Card>
   )
 }
 
 function createCalendarLink({activity, datetime, details, host, kidFriendly, link}) {
-  const startDateTime = format(new Date(datetime), 'yyyyMMdd') + 'T' + format(new Date(datetime), 'hhmmss')
-  const endDateTime = format(add(new Date(datetime), {hours: 1}), 'yyyyMMdd') + 'T' + format(add(new Date(datetime), {hours: 1}), 'hhmmss')
+  const startDateTime = format(new Date(datetime), 'yyyyMMdd') + 'T' + format(new Date(datetime), 'HHmmss')
+  const endDateTime = format(add(new Date(datetime), {hours: 1}), 'yyyyMMdd') + 'T' + format(add(new Date(datetime), {hours: 1}), 'HHmmss')
 
   const description = `<p>${details}</p> ${kidFriendly ? `<p><b>Kid Friendly</b></p>` : ''} <p>Host: ${host}</p> <p>${link}<p/>`
 
