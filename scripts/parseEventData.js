@@ -89,6 +89,7 @@ function parseSheet({sheet, fieldNameMap, category, hasDateRows}) {
       delete parsedRow.time
     }
 
+    parsedRow.kidFriendly = String(parsedRow.kidFriendly).toLowerCase() === 'yes'
     parsedRow.category = parsedRow.category || category
     parsedRow.id = hashWithMd5(parsedRow)
 
