@@ -15,11 +15,11 @@ function Home() {
         <Media query="(max-width: 991px)" render={() => <MainMenu/>}/>
         <Row align="middle">
           <Col span={18}>
-            <h1>Quaratine Cruise</h1>
+            <h1>Quarantine Cruise</h1>
             <p className="subtitle">Activities &amp; Livestreaming Events</p>
           </Col>
           <Col span={6} style={{textAlign: 'right'}}>
-            <img className="logo" src={Logo} alt="Quaratine Cruise"/>
+            <img className="logo" src={Logo} alt="Quarantine Cruise"/>
           </Col>
         </Row>
       </header>

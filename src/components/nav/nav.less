@@ -1,6 +1,11 @@
 .nav-component {
   display: flex;
   justify-content: space-between;
+  padding: 0 12px;
+
+  @media (min-width: 768px) {
+    padding: 0 50px;
+  }
 }
 
 .nav-component .logo-and-title {
@@ -22,4 +27,9 @@
 
 .nav-component .menu {
   line-height: 64px;
+  display: none;
+
+  @media (min-width: 992px) {
+    display: block;
+  }
 }

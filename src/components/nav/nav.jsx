@@ -30,7 +30,7 @@ function Nav() {
     <Header className="nav-component">
       <Link className="logo-and-title" to="/">
         <div className="logo-container">
-          <img className="logo" src={Logo} alt="Quaratine Cruise logo" />
+          <img className="logo" src={Logo} alt="Quarantine Cruise logo" />
         </div>
         <h2 className="app-title">Quarantine Cruise</h2>
       </Link>

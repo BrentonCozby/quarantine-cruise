@@ -320,8 +320,9 @@ function CardComponent({isLoading, event}) {
 function createCalendarLink({activity, datetime, details, host, kidFriendly, link}) {
   const startDateTime = format(new Date(datetime), 'yyyyMMdd') + 'T' + format(new Date(datetime), 'HHmmss')
   const endDateTime = format(addHours(new Date(datetime), 1), 'yyyyMMdd') + 'T' + format(addHours(new Date(datetime), 1), 'HHmmss')
+  const website = `<a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a>`
 
-  const description = `<p>${details}</p> ${kidFriendly ? `<p><b>Kid Friendly</b></p>` : ''} <p>Host: ${host}</p> <p>${link}<p/>`
+  const description = `<p>${website}</p> <p>${details}</p> ${kidFriendly ? `<p><b>Kid Friendly</b></p>` : ''} <p>Host: ${host}</p>`
 
   return 'http://www.google.com/calendar/render' +
     `?action=TEMPLATE` +
