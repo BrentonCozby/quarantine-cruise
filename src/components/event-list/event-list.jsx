@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {Card, Button, List, Skeleton, Layout, Row, Col, Select, Input, DatePicker, Badge} from 'antd'
 import {Link} from 'react-router-dom'
-import {format, add, isAfter, isToday, isValid, isSameDay} from 'date-fns'
+import {format, addHours, subHours, isAfter, isValid, isSameDay} from 'date-fns'
 import {LinkOutlined, CalendarTwoTone} from '@ant-design/icons'
 import Media from 'react-media'
 import './event-list.less'
@@ -56,7 +56,7 @@ function EventListComponent({
     }
 
     const allEventsWithDates = [].concat(educationData, artAndMusicData, fitnessAndWellnessData, otherData)
-    .filter(({datetime}) => isToday(new Date(datetime)) || isAfter(new Date(datetime), new Date()))
+    .filter(({datetime}) => isAfter(new Date(datetime), subHours(new Date(), 1)))
     .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
 
     setAllScheduledData(allEventsWithDates)
@@ -150,7 +150,6 @@ function EventListComponent({
             <Input.Search
               placeholder="Search"
               onSearch={onSearch}
-              loading={isLoading}
               disabled={isLoading}
               style={{minWidth: '160px'}}
             />
@@ -320,7 +319,7 @@ function CardComponent({isLoading, event}) {
 
 function createCalendarLink({activity, datetime, details, host, kidFriendly, link}) {
   const startDateTime = format(new Date(datetime), 'yyyyMMdd') + 'T' + format(new Date(datetime), 'HHmmss')
-  const endDateTime = format(add(new Date(datetime), {hours: 1}), 'yyyyMMdd') + 'T' + format(add(new Date(datetime), {hours: 1}), 'HHmmss')
+  const endDateTime = format(addHours(new Date(datetime), 1), 'yyyyMMdd') + 'T' + format(addHours(new Date(datetime), 1), 'HHmmss')
 
   const description = `<p>${details}</p> ${kidFriendly ? `<p><b>Kid Friendly</b></p>` : ''} <p>Host: ${host}</p> <p>${link}<p/>`
 

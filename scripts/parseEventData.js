@@ -2,8 +2,9 @@ const excelToJson = require('convert-excel-to-json')
 const fs = require('fs')
 const {resolve} = require('path')
 const crypto = require('crypto')
-const {set, getYear, getDate, getMonth} = require('date-fns')
+const {set, getYear, getDate, getMonth, add} = require('date-fns')
 
+const timeZoneOffset = 1
 const totalData = excelToJson({sourceFile: 'public/data/COVID 19 Activities & Live Events.xlsx'})
 
 const fieldNameMapWithDates = {
@@ -81,7 +82,10 @@ function parseSheet({sheet, fieldNameMap, category, hasDateRows}) {
 
     if (hasDateRows && isValidDate(parsedRow.time)) {
       const date = new Date(tempDate)
-      parsedRow.datetime = set(new Date(parsedRow.time), {year: getYear(date), month: getMonth(date), date: getDate(date)})
+      parsedRow.datetime = set(
+        add(new Date(parsedRow.time), {hours: timeZoneOffset}),
+        {year: getYear(date), month: getMonth(date), date: getDate(date)}
+      )
       delete parsedRow.time
     }
 
