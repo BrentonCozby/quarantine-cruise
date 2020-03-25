@@ -125,6 +125,18 @@ function EventListComponent({
     setSearchTerm(value)
   }
 
+  const onSearchChange = e => {
+    if (!e.target.value) {
+      setSearchTerm('')
+    }
+  }
+
+  const onSearchBlur = e => {
+    if (e.target.value) {
+      setSearchTerm(e.target.value)
+    }
+  }
+
   const onCategoryChange = newValue => {
     setSelectedCategory(newValue)
   }
@@ -150,8 +162,11 @@ function EventListComponent({
             <Input.Search
               placeholder="Search"
               onSearch={onSearch}
+              onBlur={onSearchBlur}
+              onChange={onSearchChange}
               disabled={isLoading}
               style={{minWidth: '160px'}}
+              allowClear
             />
           </div>
           <Select
