@@ -214,8 +214,20 @@ function EventListComponent({
         <Media queries={{small: '(max-width: 991px)', large: '(min-width: 992px)'}}>
           {matches => (
             <React.Fragment>
-              {matches.small && <CardListComponent isLoading={isLoading} eventList={isLoading ? skeletonData : visibleEventList}/>}
-              {matches.large && <ListComponent isLoading={isLoading} eventList={isLoading ? skeletonData : visibleEventList}/>}
+              {matches.small &&
+                <CardListComponent
+                  isLoading={isLoading}
+                  selectedCategory={selectedCategory}
+                  eventList={isLoading ? skeletonData : visibleEventList}
+                />
+              }
+              {matches.large &&
+                <ListComponent
+                  isLoading={isLoading}
+                  selectedCategory={selectedCategory}
+                  eventList={isLoading ? skeletonData : visibleEventList}
+                />
+              }
             </React.Fragment>
           )}
         </Media>
@@ -229,13 +241,13 @@ function EventListComponent({
   )
 }
 
-function ListComponent({isLoading, eventList}) {
+function ListComponent({isLoading, eventList, selectedCategory}) {
   return (
     <List
       className="list-component"
       dataSource={eventList}
       itemLayout="horizontal"
-      renderItem={({id, datetime, activity, host, details, kidFriendly, link}) =>
+      renderItem={({id, category, datetime, activity, host, details, kidFriendly, link}) =>
         <List.Item
           key={id}
           extra={(!isLoading &&
@@ -263,7 +275,10 @@ function ListComponent({isLoading, eventList}) {
                   <Button type="link" href={link} target="_blank" rel="noopener noreferrer">{activity}
                   &nbsp;
                   </Button> <span className="host">by {host}</span>
-                  <div className="badges">
+                  <div className="category-and-badges">
+                    {selectedCategory === 'all' && category &&
+                      <span className="category">{titleize(category.replace(/(And)/, ' & '))}</span>
+                    }
                     {kidFriendly && <Badge text="Kid Friendly" color="green"/>}
                   </div>
                 </div>
@@ -281,14 +296,14 @@ function ListComponent({isLoading, eventList}) {
   )
 }
 
-function CardListComponent({isLoading, eventList}) {
+function CardListComponent({isLoading, eventList, selectedCategory}) {
   return (
     <div className="card-list-component">
       <Layout>
         <Row gutter={[12, 12]}>
           {eventList.map(event =>
             <Col key={event.id} xs={24} sm={24} md={12}>
-              <CardComponent event={event} isLoading={isLoading}/>
+              <CardComponent event={event} isLoading={isLoading} selectedCategory={selectedCategory}/>
             </Col>
           )}
         </Row>
@@ -297,8 +312,8 @@ function CardListComponent({isLoading, eventList}) {
   )
 }
 
-function CardComponent({isLoading, event}) {
-  const {activity, host, datetime, details, kidFriendly, link} = event
+function CardComponent({isLoading, event, selectedCategory}) {
+  const {activity, category, host, datetime, details, kidFriendly, link} = event
 
   const Title = () => (
     <a href={link} target="_blank" rel="noopener noreferrer">{activity} <span><LinkOutlined/></span></a>
@@ -310,7 +325,10 @@ function CardComponent({isLoading, event}) {
 
   return (
     <Card className="card-component" title={<Title/>} size="small">
-      <div className="badges">
+      <div className="category-and-badges">
+        {selectedCategory === 'all' && category &&
+          <span className="category">{titleize(category.replace(/(And)/, ' & '))}</span>
+        }
         {kidFriendly && <Badge text="Kid Friendly" color="green"/>}
       </div>
       <p className="host">Hosted by <strong>{host}</strong></p>
@@ -344,6 +362,14 @@ function createCalendarLink({activity, datetime, details, host, kidFriendly, lin
     `&text=${activity}` +
     `&dates=${startDateTime}/${endDateTime}` +
     `&details=${description}`
+}
+
+function titleize(str) {
+  return str.split(' ').map(capitalize).join(' ')
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 export default EventListComponent
