@@ -232,7 +232,7 @@ function EventListComponent({
           )}
         </Media>
         {hasMoreResults &&
-          <div style={{textAlign: 'center', marginTop: '8px'}}>
+          <div style={{textAlign: 'center', margin: '0 12px'}}>
             <Button onClick={onLoadMore} disabled={isLoading}>Load More</Button>
           </div>
         }
