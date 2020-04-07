@@ -3,6 +3,7 @@ import {Card, Button, List, Skeleton, Layout, Row, Col, Select, Input, DatePicke
 import {Link} from 'react-router-dom'
 import {format, addHours, subHours, isAfter, isValid, isSameDay} from 'date-fns'
 import {LinkOutlined, CalendarTwoTone} from '@ant-design/icons'
+import startCase from 'lodash.startcase'
 import Media from 'react-media'
 import './event-list.less'
 
@@ -11,6 +12,7 @@ const scheduledCategoryOptions = [
   {id: 'education', label: 'Education'},
   {id: 'fitnessAndWellness', label: 'Fitness & Wellness'},
   {id: 'artAndMusic', label: 'Art & Music'},
+  {id: 'professionalDevelopment', label: 'Professional Development'},
   {id: 'other', label: 'Other'}
 ]
 
@@ -22,6 +24,7 @@ function EventListComponent({
   const [educationData, setEducationData] = useState([])
   const [artAndMusicData, setArtAndMusicData] = useState([])
   const [fitnessAndWellnessData, setFitnessAndWellnessData] = useState([])
+  const [professionalDevelopmentData, setProfessionalDevelopmentData] = useState([])
   const [otherData, setOtherData] = useState([])
 
   const [isLoading, setIsLoading] = useState(false)
@@ -43,6 +46,7 @@ function EventListComponent({
       fetch('/data/educationData.json').then(res => res.json()).then(data => setEducationData(data)),
       fetch('/data/artAndMusicData.json').then(res => res.json()).then(data => setArtAndMusicData(data)),
       fetch('/data/fitnessAndWellnessData.json').then(res => res.json()).then(data => setFitnessAndWellnessData(data)),
+      fetch('/data/professionalDevelopmentData.json').then(res => res.json()).then(data => setProfessionalDevelopmentData(data)),
       fetch('/data/otherData.json').then(res => res.json()).then(data => setOtherData(data)),
       fetch('/data/anytimeData.json').then(res => res.json()).then(data => setAllAnytimeData(data))
     ]).then(() => {
@@ -51,16 +55,16 @@ function EventListComponent({
   }, [])
 
   useEffect(() => {
-    if ([educationData, artAndMusicData, fitnessAndWellnessData, otherData].some(d => !d)) {
+    if ([educationData, artAndMusicData, fitnessAndWellnessData, professionalDevelopmentData, otherData].some(d => !d)) {
       return
     }
 
-    const allEventsWithDates = [].concat(educationData, artAndMusicData, fitnessAndWellnessData, otherData)
+    const allEventsWithDates = [].concat(educationData, artAndMusicData, fitnessAndWellnessData, professionalDevelopmentData, otherData)
     .filter(({datetime}) => isAfter(new Date(datetime), subHours(new Date(), 1)))
     .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
 
     setAllScheduledData(allEventsWithDates)
-  }, [educationData, artAndMusicData, fitnessAndWellnessData, otherData])
+  }, [educationData, artAndMusicData, fitnessAndWellnessData, professionalDevelopmentData, otherData])
 
   useEffect(() => { // setFullEventList and setVisibleEventList
     let newEventList = []
@@ -277,7 +281,7 @@ function ListComponent({isLoading, eventList, selectedCategory}) {
                   </Button> <span className="host">by {host}</span>
                   <div className="category-and-badges">
                     {selectedCategory === 'all' && category &&
-                      <span className="category">{titleize(category.replace(/(And)/, ' & '))}</span>
+                      <span className="category">{titlecase(category)}</span>
                     }
                     {kidFriendly && <Badge text="Kid Friendly" color="green"/>}
                   </div>
@@ -327,7 +331,7 @@ function CardComponent({isLoading, event, selectedCategory}) {
     <Card className="card-component" title={<Title/>} size="small">
       <div className="category-and-badges">
         {selectedCategory === 'all' && category &&
-          <span className="category">{titleize(category.replace(/(And)/, ' & '))}</span>
+          <span className="category">{titlecase(category)}</span>
         }
         {kidFriendly && <Badge text="Kid Friendly" color="green"/>}
       </div>
@@ -362,6 +366,10 @@ function createCalendarLink({activity, datetime, details, host, kidFriendly, lin
     `&text=${activity}` +
     `&dates=${startDateTime}/${endDateTime}` +
     `&details=${description}`
+}
+
+function titlecase(str) {
+  return titleize(startCase(str)).replace(/(And)/, '&')
 }
 
 function titleize(str) {

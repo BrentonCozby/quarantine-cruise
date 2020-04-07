@@ -16,7 +16,7 @@ function Home() {
         <Row align="middle">
           <Col span={18}>
             <h1>Quarantine Cruise</h1>
-            <p className="subtitle">Activities &amp; Livestreaming Events</p>
+            <p className="subtitle">Activities &amp; livestreaming events to help you stay busy during the Covid-19 quarantine</p>
           </Col>
           <Col span={6} style={{textAlign: 'right'}}>
             <img className="logo" src={Logo} alt="Quarantine Cruise"/>

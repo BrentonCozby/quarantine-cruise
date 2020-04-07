@@ -43,6 +43,12 @@ const artAndMusicData = parseSheet({
   category: 'artAndMusic',
   hasDateRows: true
 })
+const professionalDevelopmentData = parseSheet({
+  sheet: totalData['PROFESSIONAL DEVELOPMENT'],
+  fieldNameMap: fieldNameMapWithDates,
+  category: 'professionalDevelopment',
+  hasDateRows: true
+})
 const otherData = parseSheet({
   sheet: totalData['OTHER'],
   fieldNameMap: fieldNameMapWithDates,
@@ -57,6 +63,7 @@ const anytimeData = parseSheet({
 createJsonFile({filename: 'educationData.json', jsonData: educationData})
 createJsonFile({filename: 'fitnessAndWellnessData.json', jsonData: fitnessAndWellnessData})
 createJsonFile({filename: 'artAndMusicData.json', jsonData: artAndMusicData})
+createJsonFile({filename: 'professionalDevelopmentData.json', jsonData: professionalDevelopmentData})
 createJsonFile({filename: 'otherData.json', jsonData: otherData})
 createJsonFile({filename: 'anytimeData.json', jsonData: anytimeData})
 
